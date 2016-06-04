@@ -3,6 +3,7 @@ package com.example.mynote.activities;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteStatement;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -26,27 +27,18 @@ public class MainActivity extends AppCompatActivity {
     private ListView lv;
     private Button newNote;
     private MySQLiteOpenHelper mySQLiteOpenHelper;
-    SQLiteDatabase db;
+    private SQLiteDatabase db;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        initDataBase();
+        mySQLiteOpenHelper = new MySQLiteOpenHelper(this,"NoteStore.db",null,1);
+        db = mySQLiteOpenHelper.getWritableDatabase();
         initView();
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                goToEditNote("no",id);
-                Toast.makeText(MainActivity.this,id+"",Toast.LENGTH_SHORT);
-                Log.d("TAG","ListView id--------->"+id);
-            }
-        });
-        lv.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                db.execSQL("delete from Note where id = ?",new String[]{(id+1)+""});
-                refreshNoteList();
-                return false;
+                goToEditNote("old");
             }
         });
 
@@ -54,22 +46,15 @@ public class MainActivity extends AppCompatActivity {
         newNote.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                db.execSQL("insert into Note(notetitle,notecontent) values(?,?)",
-                        new String[]{"",""});
-                goToEditNote("yes",noteList.size());
+                goToEditNote("new");
             }
         });
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
+    protected void onResume() {
+        super.onResume();
         refreshNoteList();
-    }
-
-    private void initDataBase(){
-        mySQLiteOpenHelper = new MySQLiteOpenHelper(this,"NoteStore.db",null,1);
-        db = mySQLiteOpenHelper.getWritableDatabase();
     }
 
     private void initView(){
@@ -92,10 +77,9 @@ public class MainActivity extends AppCompatActivity {
         lv.setAdapter(adapter);
     }
 
-    private void goToEditNote(String i,long id){
+    private void goToEditNote(String fromWhere){
         Intent intent=new Intent(MainActivity.this,EditNote.class);
-        intent.putExtra("is_the_first_time_goToEditNote",i);
-        intent.putExtra("id",id);
+        intent.putExtra("fromWhere",fromWhere);
         startActivity(intent);
     }
 }

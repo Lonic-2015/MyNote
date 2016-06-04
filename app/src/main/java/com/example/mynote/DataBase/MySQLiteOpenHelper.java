@@ -12,7 +12,8 @@ public class MySQLiteOpenHelper extends SQLiteOpenHelper{
     public static final String CREATE_NOTE="create table Note("
             +"id integer primary key autoincrement, "
             +"notetitle text, "
-            +"notecontent text)";
+            +"notecontent text, "
+            +"id2 integer)";
 
     private Context mContext;
     public MySQLiteOpenHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {

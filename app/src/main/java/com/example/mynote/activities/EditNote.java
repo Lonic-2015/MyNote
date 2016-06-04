@@ -4,11 +4,13 @@ import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteStatement;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.example.mynote.DataBase.MySQLiteOpenHelper;
 import com.example.mynote.R;
@@ -17,14 +19,14 @@ import com.example.mynote.R;
  * Created by 金晨 on 2016-06-02.
  */
 public class EditNote extends Activity{
+    private String id;
     private EditText noteTitle;
     private EditText noteContent;
     private Button saveNote;
     private Button queryNote;
     private MySQLiteOpenHelper mySQLiteOpenHelper;
     private SQLiteDatabase db;
-    private long id;//note表项在数据库table中的id
-    private int saveNum=0;
+    private String fromWhere;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,11 +35,9 @@ public class EditNote extends Activity{
         initDataBase();
         initView();
         Intent intent=getIntent();
-        String data=intent.getStringExtra("is_the_first_time_goToEditNote");
-        //从MainActivity获取ListView的item的id
-        //数据库table的id等于item的id加1
-        id=intent.getLongExtra("id",-1)+1;
-        if(data.equals("no")){
+        fromWhere =intent.getStringExtra("fromWhere");
+        //if(fromWhere.equals("new"))
+        if(fromWhere.equals("old")){
             resumeContent();
             Log.d("TAG","resumeContent执行了");
         }
@@ -45,21 +45,33 @@ public class EditNote extends Activity{
         saveNote.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //************更新表项****************
-                if(noteTitle.getText().toString().equals("")==false
-                        &&noteContent.getText().toString().equals("")==false){
-                    db.execSQL("update Note set notetitle=? where id=?",
-                            new String[]{noteTitle.getText().toString(),id+""});
-                    db.execSQL("update Note set notecontent=? where id=?",
-                            new String[]{noteContent.getText().toString(),id+""});
-                }else if(noteTitle.getText().toString().equals("")==true
-                        &&noteContent.getText().toString().equals("")==false){
-                    db.execSQL("update Note set notetitle=? where id=?",
-                            new String[]{"未命名笔记",id+""});
-                }else{
-                    //删除数据库中的表项
+                switch (fromWhere){
+                    case("new"):
+                        db.execSQL("insert into Note(notetitle,notecontent) values(?,?)",
+                                new String[]{"",""});
+                        SQLiteStatement statement = db.compileStatement("select count(*) from Note");
+                        long id_in_table = statement.simpleQueryForLong();
+                        Log.d("TAG","id_in_table----->"+id_in_table);
+                        //此处不写break
+                    case("old"):
+                        //************更新表项****************
+                        if(noteTitle.getText().toString().equals("")==false
+                                &&noteContent.getText().toString().equals("")==false){
+                            db.execSQL("update Note set notetitle=? where id=?",
+                                    new String[]{noteTitle.getText().toString(),id+""});
+                            db.execSQL("update Note set notecontent=? where id=?",
+                                    new String[]{noteContent.getText().toString(),id+""});
+                        }else if(noteTitle.getText().toString().equals("")==true
+                                &&noteContent.getText().toString().equals("")==false){
+                            db.execSQL("update Note set notetitle=? where id=?",
+                                    new String[]{"未命名笔记",id+""});
+                        }else{
+                            //删除数据库中的表项
+                        }
+                        //*************************************
+                        break;
                 }
-                //*************************************
+
             }
         });
 
@@ -72,7 +84,7 @@ public class EditNote extends Activity{
                         int id=cursor.getInt(cursor.getColumnIndex("id"));
                         String noteTitle=cursor.getString(cursor.getColumnIndex("notetitle"));
                         String noteContent=cursor.getString(cursor.getColumnIndex("notecontent"));
-                        Log.d("TAG","id is"+id);
+                        Log.d("TAG","real id_in_table is"+id);
                         Log.d("TAG","title is"+noteTitle);
                         Log.d("TAG","content is"+noteContent);
                     }while (cursor.moveToNext());
@@ -96,8 +108,8 @@ public class EditNote extends Activity{
         cursor.moveToLast();
         noteTitle.setText(cursor.getString(cursor.getColumnIndex("notetitle")));
         noteContent.setText(cursor.getString(cursor.getColumnIndex("notecontent")));*/
-        Cursor cursor=db.rawQuery("select * from Note where id =?",new String[]{id+""});
-        Log.d("TAG",id+"");
+        Cursor cursor=db.rawQuery("select * from Note where id =?",new String[]{id});
+        Log.d("TAG","id_in_table in EditNote"+id);
         if(cursor.moveToFirst()){
             do{
                 String title=cursor.getString(cursor.getColumnIndex("notetitle"));

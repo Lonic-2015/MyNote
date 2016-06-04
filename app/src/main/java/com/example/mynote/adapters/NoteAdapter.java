@@ -17,6 +17,7 @@ import java.util.List;
  */
 public class NoteAdapter extends ArrayAdapter<Note>{
     private int resourceId;//ListView子项的布局
+    private long id_in_table;
 
     public NoteAdapter(Context context, int textViewResourceId, List<Note> objects) {
         super(context,  textViewResourceId, objects);
@@ -30,5 +31,13 @@ public class NoteAdapter extends ArrayAdapter<Note>{
         TextView itemName = (TextView)view.findViewById(R.id.item_name);
         itemName.setText(note.getTitle());
         return view;
+    }
+
+    public long getId_in_table() {
+        return id_in_table;
+    }
+
+    public void setId_in_table(long id_in_table) {
+        this.id_in_table = id_in_table;
     }
 }
