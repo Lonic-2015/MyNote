@@ -10,10 +10,10 @@ import android.widget.Toast;
  */
 public class MySQLiteOpenHelper extends SQLiteOpenHelper{
     public static final String CREATE_NOTE="create table Note("
-            +"id integer primary key autoincrement, "
+            +"_id integer primary key autoincrement, "
             +"notetitle text, "
             +"notecontent text, "
-            +"id2 integer)";
+            +"modifytime text)";
 
     private Context mContext;
     public MySQLiteOpenHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
@@ -24,7 +24,7 @@ public class MySQLiteOpenHelper extends SQLiteOpenHelper{
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(CREATE_NOTE);
-        Toast.makeText(mContext,"数据库创建成功",Toast.LENGTH_SHORT);
+        Toast.makeText(mContext,"数据库创建成功",Toast.LENGTH_SHORT).show();
     }
 
     @Override

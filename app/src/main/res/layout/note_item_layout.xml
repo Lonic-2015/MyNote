@@ -1,12 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
     android:layout_height="match_parent">
     <TextView
-        android:id="@+id/item_name"
+        android:id="@+id/item_title"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
         android:textSize="18sp"
+        android:text="TITLE"
+        />
+    <TextView
+        android:id="@+id/item_content"
+        android:layout_below="@+id/item_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="14sp"
+        android:text="CONTENT"
+        />
+    <TextView
+        android:id="@+id/modify_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="10sp"
+        android:layout_alignParentRight="true"
+        android:paddingRight="10dp"
+        android:text="2016.08.26"
         />
 
-</LinearLayout>
+</RelativeLayout>
